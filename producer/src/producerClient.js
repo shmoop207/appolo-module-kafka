@@ -10,7 +10,7 @@ let ProducerClient = class ProducerClient {
         let kafka = new kafkajs_1.Kafka(this.moduleOptions.config);
         const producer = kafka.producer(this.moduleOptions.producerConfig);
         if (this.moduleOptions.reconnectOnError) {
-            producer.on("producer.disconnect", () => setTimeout(() => this._connect(producer), 5000));
+            producer.on("producer.disconnect", () => this._reconnect(producer));
         }
         let [err] = await utils_1.Promises.to(utils_1.Promises.timeout(this._connect(producer), this.moduleOptions.maxConnectTime || Number.MAX_SAFE_INTEGER));
         if (err && !this.moduleOptions.reconnectOnError) {
@@ -26,12 +26,16 @@ let ProducerClient = class ProducerClient {
         catch (e) {
             this.logger.error("failed to connect to kafka", { e });
             if (this.moduleOptions.reconnectOnError) {
-                setTimeout(() => this._connect(producer), 5000);
+                this._reconnect(producer);
             }
             else {
                 throw e;
             }
         }
+    }
+    _reconnect(producer) {
+        clearTimeout(this._interval);
+        this._interval = setTimeout(() => this._connect(producer), 5000);
     }
 };
 tslib_1.__decorate([

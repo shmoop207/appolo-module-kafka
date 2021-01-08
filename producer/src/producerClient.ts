@@ -4,6 +4,7 @@ import {ILogger} from "@appolo/logger";
 import {IProducerOptions} from "./IProducerOptions";
 import {Kafka, Producer} from 'kafkajs';
 import {Promises} from '@appolo/utils';
+import Timeout = NodeJS.Timeout;
 
 
 @define()
@@ -14,6 +15,8 @@ export class ProducerClient implements IFactory<Producer> {
     @inject() logger: ILogger;
     @inject() moduleOptions: IProducerOptions;
 
+    private _interval:Timeout
+
     public async get(): Promise<Producer> {
 
 
@@ -22,7 +25,7 @@ export class ProducerClient implements IFactory<Producer> {
         const producer = kafka.producer(this.moduleOptions.producerConfig);
 
         if (this.moduleOptions.reconnectOnError) {
-            producer.on("producer.disconnect", () => setTimeout(() => this._connect(producer), 5000))
+            producer.on("producer.disconnect", () =>this._reconnect(producer))
         }
 
         let [err] = await Promises.to(Promises.timeout(this._connect(producer), this.moduleOptions.maxConnectTime || Number.MAX_SAFE_INTEGER))
@@ -46,10 +49,15 @@ export class ProducerClient implements IFactory<Producer> {
             this.logger.error("failed to connect to kafka", {e});
 
             if (this.moduleOptions.reconnectOnError) {
-                setTimeout(() => this._connect(producer), 5000);
+                this._reconnect(producer)
             } else {
                 throw e;
             }
         }
+    }
+
+    private _reconnect(producer: Producer){
+        clearTimeout(this._interval)
+        this._interval = setTimeout(() => this._connect(producer), 5000);
     }
 }
