@@ -22,7 +22,7 @@ let KafkaConsumerModule = KafkaConsumerModule_1 = class KafkaConsumerModule exte
     }
 };
 KafkaConsumerModule = KafkaConsumerModule_1 = tslib_1.__decorate([
-    engine_1.module()
+    (0, engine_1.module)()
 ], KafkaConsumerModule);
 exports.KafkaConsumerModule = KafkaConsumerModule;
 //# sourceMappingURL=kafkaConsumerModule.js.map

@@ -39,15 +39,15 @@ let ProducerClient = class ProducerClient {
     }
 };
 tslib_1.__decorate([
-    inject_1.inject()
+    (0, inject_1.inject)()
 ], ProducerClient.prototype, "logger", void 0);
 tslib_1.__decorate([
-    inject_1.inject()
+    (0, inject_1.inject)()
 ], ProducerClient.prototype, "moduleOptions", void 0);
 ProducerClient = tslib_1.__decorate([
-    inject_1.define(),
-    inject_1.singleton(),
-    inject_1.factory()
+    (0, inject_1.define)(),
+    (0, inject_1.singleton)(),
+    (0, inject_1.factory)()
 ], ProducerClient);
 exports.ProducerClient = ProducerClient;
 //# sourceMappingURL=producerClient.js.map
